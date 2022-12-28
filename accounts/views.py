@@ -16,7 +16,6 @@ from django.template.loader import render_to_string
 from django.core.mail import EmailMessage
 # datetime module
 import datetime
-# from datetime import datetime
 # Create your views here.
 def sign_up(request):
     if request.method == 'POST':
@@ -146,6 +145,7 @@ def forgot_password(request):
                             'token': default_token_generator.make_token(user),
                             'uid': urlsafe_base64_encode(force_bytes(user.id)),
                      }
+                     print('password_verification[uid]: ', password_verification['uid'])
 # prepare the body part of the email
                      email_body = render_to_string('accounts/reset_password_verification.html', password_verification)
 # prepare the subject part of the email
@@ -238,21 +238,14 @@ def my_profile(request):
         end = each_event.event_scheduled_to_end
 # First we compare today's date with event date
         if str(now.date())  > str(each_event.calendar): # event is happened in the past
-            print(each_event.event_title," completed!!")
             status['completed'] += 1
         elif str(now.date()) < str(each_event.calendar): # event is not scheduled for today
-            print(each_event.event_title, " Upcoming")
             status['upcoming'] += 1
         else: # event is scheduled for today
 # now we need to compare the time
-            if start > end and str(end) == '00:00:00' and start <= now.time() : # event is
-                status['goingon'] += 1
-            elif now.time() > end: # event is completed
-                print(now.time(), " now.time()")
-                print(end, " end")
+            if now.time() > end: # event is completed
                 status['completed'] += 1
             elif start <= now.time() <= end: # event is currently taking place
-                print(each_event.event_title, " is goingon")
                 status['goingon'] += 1
             else:
                 print(each_event.event_title, ' is upcoming')      
